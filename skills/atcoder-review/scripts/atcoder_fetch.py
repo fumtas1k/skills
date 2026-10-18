@@ -27,6 +27,7 @@ import json
 import math
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import time
@@ -47,7 +48,6 @@ OJ_COOKIES = [
     Path.home() / "Library/Application Support/online-judge-tools/cookie.jar",
     Path.home() / ".local/share/online-judge-tools/cookie.jar",
 ]
-ACC_TEMPLATE = Path.home() / "Library/Preferences/atcoder-cli-nodejs/ruby/main.rb"
 UA = "atcoder-review-skill/1.0 (personal post-contest review)"
 READS_INPUT = re.compile(r"\b(gets|STDIN|ARGF|readlines?|read)\b|\$stdin|\$<")
 FETCH_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
@@ -230,6 +230,37 @@ def parse_points(page):
     return {label.upper(): int(pt) for label, pt in rows}
 
 
+def acc_config_dirs():
+    """acc の設定ディレクトリの候補。`acc config-dir` の結果を優先し、OS ごとの既定の場所で補う。"""
+    try:
+        res = subprocess.run(["acc", "config-dir"], capture_output=True, text=True, timeout=10)
+        if res.returncode == 0 and res.stdout.strip():
+            yield Path(res.stdout.strip())
+    except (OSError, subprocess.SubprocessError):
+        pass
+    yield Path.home() / "Library/Preferences/atcoder-cli-nodejs"
+    yield Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "atcoder-cli-nodejs"
+    if os.environ.get("APPDATA"):
+        yield Path(os.environ["APPDATA"]) / "atcoder-cli-nodejs/Config"
+
+
+def load_acc_template():
+    """acc の既定テンプレートの提出ファイルを行のリストで返す。見つからなければ None。"""
+    for d in acc_config_dirs():
+        try:
+            name = json.loads((d / "config.json").read_text(encoding="utf-8")).get("default-template")
+            if not name:
+                continue
+            tdir = d / name
+            task = json.loads((tdir / "template.json").read_text(encoding="utf-8")).get("task", {})
+            submit = task.get("submit") or (task.get("program") or [None])[0]
+            if submit and (tdir / submit).exists():
+                return [l.rstrip() for l in (tdir / submit).read_text(encoding="utf-8").splitlines()]
+        except (OSError, ValueError):
+            continue
+    return None
+
+
 def local_state(root, contest_id, tasks, start_epoch, end_epoch, errors):
     """手元の解答ファイルの状態（未着手かどうか、更新時刻、ヘッダータグ）を調べる。"""
     cdir = root / contest_id
@@ -238,9 +269,7 @@ def local_state(root, contest_id, tasks, start_epoch, end_epoch, errors):
         data = json.loads((cdir / "contest.acc.json").read_text(encoding="utf-8"))
         for t in data.get("tasks", []):
             acc[t["id"]] = t.get("directory") or {}
-    template = None
-    if ACC_TEMPLATE.exists():
-        template = [l.rstrip() for l in ACC_TEMPLATE.read_text(encoding="utf-8").splitlines()]
+    template = load_acc_template()
     out = {}
     for task_id, info in tasks.items():
         try:
