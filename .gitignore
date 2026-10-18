@@ -1,0 +1,4 @@
+.DS_Store
+__pycache__/
+# 個人設定（AtCoder ID など）
+skills/atcoder-review/config.json

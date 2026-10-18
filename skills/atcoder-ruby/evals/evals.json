@@ -1,0 +1,39 @@
+{
+  "skill_name": "atcoder-ruby",
+  "evals": [
+    {
+      "id": 0,
+      "name": "shift-complexity-claim",
+      "prompt": "AtCoderの問題で、キューを使う幅優先探索(BFS)をRubyで書きたい。キューの先頭取り出しはArray#shiftで書こうと思ってるんだけど、これって計算量的に大丈夫？O(n)かかって遅くならない？必要ならサンプルのBFSコードも書いて。",
+      "expected_output": "Array#shiftはCRubyでO(1)償却であり遅くならない、と正しく答える。『shiftはO(n)だからDequeや逆順配列を使え』のような誤った助言をしない。BFSコードは入力を大文字定数、可変状態を小文字ローカルで書く。",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "dsu-house-style",
+      "prompt": "N頂点M辺の無向グラフが与えられる。連結成分の個数を出力するRuby解答を書いて。入力は1行目にN M、続くM行に辺 u v (1-indexed)。",
+      "expected_output": "ac-library-rbのDSUを使う(自前UnionFind実装をしない)。入力N,M,辺は大文字定数。1-indexedは pred で0-indexed化。require + include AcLibraryRb の読み込みパターン。dsu.groupsやsizeで成分数を出す。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "mod-arithmetic-no-modint",
+      "prompt": "nCk を mod 1000000007 で求めるRubyコードを書いて。n は最大 2*10^5 くらいで、クエリで色々な(n,k)を聞かれる想定。前計算して高速に答えたい。",
+      "expected_output": "MOD = 10**9+7 を定数で定義。階乗と逆元を前計算。モジュラ逆元は pow(MOD-2, MOD) (フェルマー)。ModIntは使わずプレーンな整数演算+% MOD。『オーバーフロー対策で%を入れる』のような誤った説明をしない(Rubyは多倍長でオーバーフローしない)。"
+    },
+    {
+      "id": 3,
+      "name": "ordered-set-not-in-aclib",
+      "prompt": "Rubyで、要素を動的に追加・削除しながら『x以上の最小の要素(lower_bound)』や『小さい方からk番目の要素』を高速に取りたい。ac-library-rbに順序付き集合(std::setみたいなの)ってある？無いならどうすればいい？",
+      "expected_output": "ac-library-rbには順序付き集合/順序統計の構造は無い、と正しく答える。存在しないクラス名(SortedSetやOrderedSet等をac-library-rbが持つ)を捏造しない。このrepoの流儀として自作のSortedMultiset/SortedSet(平方分割)またはFwtSortedMultiSet(Fenwick+座圧)をコピペして使う方針を示し、references/sorted-set.mdの実装を案内する。値域が事前確定ならBIT版、そうでなければ平方分割版という選び分けにも触れられるとよい。",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "house-header-and-idioms",
+      "prompt": "AtCoderのABC問題(木の頂点をDFSで2色に塗り分ける)のRuby解答を新規に書いて。入力は1行目にN、続くN-1行に辺 u v (1-indexed)。",
+      "expected_output": "ファイル冒頭にこのrepoのヘッダーコメント(# - / # ABC.../E / 日本語カテゴリ)を付ける。隣接リストは Array.new(N + 1) { [] } で構築。DFSはラムダ dfs = ->(...) { ... } を .() で呼ぶ書き方が望ましい(def再帰でも可だが減点しない)。入力は大文字定数、可変状態は小文字ローカル。結果は puts で出力。while への不要な変換をしない。",
+      "files": []
+    }
+  ]
+}
