@@ -26,4 +26,4 @@ npx skills update
 - **house style**: 解答の先頭のヘッダー（`# -` / 問題 ID / アルゴリズムのタグ）、DFS はラムダで書く、ModInt と Deque は使わない、順序付き集合は自作の `SortedMultiset` を貼る、など。`atcoder-ruby` はこれを「従うべき規約」として扱います。
 - **振り返りの方針**: Ruby で TLE しても定数倍の調整は提案しない、など。`atcoder-review` はこれに従います。
 - **想定する環境**: Ruby（CRuby 3.4）、[atcoder-cli](https://github.com/Tatamo/atcoder-cli)（acc）のフォルダ構成、[online-judge-tools](https://github.com/online-judge-tools/oj)（oj）のログインセッション。oj の cookie は macOS と Linux の既定の場所だけを探します。
-- **evals**: `evals/evals.json` は作者の手元の解答（`abc477`・`abc478`）を前提にした回帰テストで、他の環境ではそのまま使えません。
+- **evals**: `evals/evals.json` は skill-creator で使う評価用の依頼と期待する振る舞いです。`atcoder-review` の evals は「直近のコンテスト」を対象にするので、手元に参加したコンテストのフォルダ（acc の構成）があれば、どの回でも使えます。

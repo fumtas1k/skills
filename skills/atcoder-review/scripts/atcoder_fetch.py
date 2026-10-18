@@ -164,11 +164,17 @@ def load_config():
 
 
 def find_root(start):
-    """リポジトリのルート（Gemfile か .agents がある場所）を上方向に探す。"""
+    """コンテストのフォルダが並ぶルートを上方向に探す。
+
+    Gemfile か .agents がある場所、直下にコンテストのフォルダ（contest.acc.json を持つ）がある場所、
+    コンテストのフォルダの中ならその親、のいずれかをルートとみなす。
+    """
     p = Path(start).resolve()
     for cand in [p, *p.parents]:
-        if (cand / "Gemfile").exists() or (cand / ".agents").exists():
+        if (cand / "Gemfile").exists() or (cand / ".agents").exists() or any(cand.glob("*/contest.acc.json")):
             return cand
+        if (cand / "contest.acc.json").exists():
+            return cand.parent
     return p
 
 
